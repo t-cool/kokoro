@@ -59,13 +59,13 @@ async function sendMessage() {
 
         if (response.ok) {
             addMessage(data.response, 'bot');
-            statusBar.textContent = "いつでも話してね。";
+            statusBar.textContent = "さらに詳しい状況があれば教えてください。";
         } else {
-            addMessage("ごめんなさい、ちょっと考えがまとまらなくて。もう一度話してくれる？", "bot");
+            addMessage("すみません、少し考えがまとまりませんでした。もう一度症状を詳しく教えてもらえますか？", "bot");
         }
     } catch (error) {
         hideTypingIndicator();
-        addMessage("接続がうまくいかないみたい。先生に直接会いに来てくれるかな？", "bot");
+        addMessage("通信エラーが発生しました。体調が非常に悪い場合は、直接保健室へ来てください。", "bot");
         console.error(error);
     } finally {
         userInput.disabled = false;

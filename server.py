@@ -74,7 +74,7 @@ async def chat(request: ChatRequest):
         )
         text = response['choices'][0]['text'].strip()
         # 先生： などのプレフィックスがついた場合に削除
-        text = text.replace("先生:", "").replace("カウンセラー:", "").strip()
+        text = text.replace("先生:", "").replace("校医:", "").replace("医師:", "").strip()
         return {"response": text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
