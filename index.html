@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedGemma Medical Chat</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+        }
+        #chat-container {
+            width: 90%;
+            max-width: 600px;
+            height: 85vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #chat-header {
+            background-color: #a8d5ba; /* 優しい緑 */
+            color: #4a4a4a;
+            padding: 15px;
+            text-align: center;
+        }
+        #status-bar {
+            background-color: #f1f8f4;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #e0eee0;
+            color: #88a088;
+        }
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #fafdfb;
+        }
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border-bottom-right-radius: 4px;
+        }
+        .bot-message {
+            align-self: flex-start;
+            background-color: #ffffff;
+            color: #333;
+            border: 1px solid #e0eee0;
+            border-bottom-left-radius: 4px;
+        }
+        /* タイピングインジケーターのアニメーション */
+        .typing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #a8d5ba;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        #input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e0eee0;
+            background-color: #ffffff;
+        }
+        #user-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            outline: none;
+            background-color: #f8fdfa;
+        }
+        #send-btn {
+            background-color: #a8d5ba;
+            color: #4a4a4a;
+            border: none;
+            padding: 10px 22px;
+            margin-left: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">
+            <strong>ココロの保健室</strong>
+        </div>
+        <div id="status-bar">準備中...</div>
+        <div id="chat-window">
+            <div class="message bot-message">こんにちは。ここはあなたのための場所です。今、どんな気持ちか、ゆっくり聞かせてね。</div>
+        </div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="今の気持ちを話してみる..." autocomplete="off">
+            <button id="send-btn">話す</button>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

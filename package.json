@@ -1,0 +1,12 @@
+{
+  "name": "hoken-medgemma",
+  "version": "1.0.0",
+  "description": "MedGemma 問診アプリ",
+  "main": "server.py",
+  "scripts": {
+    "dev": "source venv/bin/activate && python server.py"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
