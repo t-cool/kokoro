@@ -3,6 +3,8 @@ const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const statusBar = document.getElementById('status-bar');
 
+let chatHistory = [];
+
 function addMessage(text, sender) {
     const div = document.createElement('div');
     div.classList.add('message');
@@ -10,6 +12,9 @@ function addMessage(text, sender) {
     div.textContent = text;
     chatWindow.appendChild(div);
     chatWindow.scrollTop = chatWindow.scrollHeight;
+    
+    // 履歴に追加
+    chatHistory.push({ role: sender, text: text });
 }
 
 // タイピングインジケーター（生成中のバブル）を表示
@@ -46,7 +51,7 @@ async function sendMessage() {
         const response = await fetch('http://localhost:8000/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text }),
+            body: JSON.stringify({ message: text, history: chatHistory.slice(0, -1) }), // 最新のメッセージはmessageとして送るので履歴からは除く
         });
 
         const data = await response.json();
@@ -77,4 +82,3 @@ userInput.addEventListener('keypress', (e) => {
 // 初期状態
 userInput.disabled = false;
 sendBtn.disabled = false;
-statusBar.textContent = "心の耳を傾けています...";

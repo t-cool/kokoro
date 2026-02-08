@@ -35,28 +35,42 @@ except Exception as e:
 
 class ChatRequest(BaseModel):
     message: str
+    history: list = []
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     if not llm:
         raise HTTPException(status_code=500, detail="Model is not loaded.")
     
-    # 傾聴スタイルと短文指定のシステムプロンプト
+    # 医学的診断と対話による絞り込みを重視したシステムプロンプト
     system_instr = (
-        "あなたは大学の保健室の先生です。ロジャーズ派の傾聴を心がけ、学生の言葉を否定せず共感的に伝えてください。"
-        "応答は1〜3文程度で非常に短くしてください。アドバイスは医療的知見に基づきつつも、まずは学生の感情に寄り添うことを最優先してください。"
-        "「〜なんですね」「それはお辛かったですね」といった受容的な表現を使い、日本語で答えてください。"
+        "あなたは学校の保健室に勤務する経験豊富な医師（校医）です。学生の訴えに対して、一度に大量の情報を提示するのではなく、"
+        "問診を通じて段階的に原因を絞り込んでください。以下の手順を厳守してください：\n"
+        "1. 学生の訴えから、まず可能性のある医学的背景をいくつか推測する。\n"
+        "2. その推測を裏付ける、あるいは否定するために、最も重要な質問を【一つだけ】学生に投げかける。\n"
+        "3. 学生からの回答を待ってから、次のステップ（さらなる質問、または診断の提示）に進む。\n"
+        "4. 最終的な診断と具体的な改善策（生活習慣、受診勧奨など）を提示するまで、この対話を繰り返す。\n"
+        "回答は常に簡潔（2〜3文程度）に保ち、医師として論理的で信頼できる口調（〜です、〜してください）を使用してください。"
+        "MEDGEMMAの医学的専門知識を背景に持ちつつも、対話を通じて慎重に原因を特定していくプロセスを重視してください。"
     )
     
-    prompt = f"<start_of_turn>user\n{system_instr}\n\n相談内容: {request.message}<end_of_turn>\n<start_of_turn>model\n"
+    # 履歴の構築（システム指示を最初に含める）
+    prompt = f"<start_of_turn>user\n{system_instr}<end_of_turn>\n"
+    
+    for msg in request.history:
+        role = "user" if msg['role'] == 'user' else "model"
+        # 最初の挨拶は履歴に含まれている可能性があるので重複を避ける（必要なら）
+        prompt += f"<start_of_turn>{role}\n{msg['text']}<end_of_turn>\n"
+    
+    prompt += f"<start_of_turn>user\n{request.message}<end_of_turn>\n<start_of_turn>model\n"
     
     try:
         response = llm(
             prompt, 
-            max_tokens=256, # 短文なので制限を絞る
-            stop=["<end_of_turn>", "user", "先生:", "学生:"], 
+            max_tokens=512, # 医学的説明のために拡張
+            stop=["<end_of_turn>", "user", "先生:", "学生:", "<start_of_turn>"], 
             echo=False, 
-            temperature=0.6 # 少し落ち着いた回答にする
+            temperature=0.4 # より正確で落ち着いた回答にする
         )
         text = response['choices'][0]['text'].strip()
         # 先生： などのプレフィックスがついた場合に削除
